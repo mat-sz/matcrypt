@@ -1,6 +1,6 @@
 {
   "name": "matcrypt",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "A WebCrypto wrapper I use for my projects to make certain common tasks easy.",
   "main": "./lib/index.js",
   "scripts": {
