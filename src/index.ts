@@ -15,7 +15,7 @@ const textDecoder = new TextDecoder();
  * Joins two byte arrays together.
  */
 function joinArrays(a: Uint8Array, b: Uint8Array): Uint8Array {
-  let c = new Uint8Array(a.length + b.length);
+  const c = new Uint8Array(a.length + b.length);
   c.set(a, 0);
   c.set(b, a.length);
   return c;
@@ -53,7 +53,7 @@ function getDataFromArray(a: Uint8Array): Uint8Array {
  * Generates a random base64 encoded key.
  */
 export async function randomKey(): Promise<string> {
-  let key = await crypto.subtle.generateKey(
+  const key = await crypto.subtle.generateKey(
     {
       name: settings.algorithm,
       length: settings.keyLength,
@@ -61,7 +61,7 @@ export async function randomKey(): Promise<string> {
     true,
     ['encrypt', 'decrypt']
   );
-  let raw = await crypto.subtle.exportKey('raw', key);
+  const raw = await crypto.subtle.exportKey('raw', key);
 
   return fromByteArray(new Uint8Array(raw));
 }
@@ -108,9 +108,9 @@ export async function encrypt(
   keyStr: string,
   data: Uint8Array | ArrayBuffer
 ): Promise<Uint8Array> {
-  let key = await stringToKey(keyStr);
-  let iv = crypto.getRandomValues(new Uint8Array(12));
-  let encrypted = new Uint8Array(
+  const key = await stringToKey(keyStr);
+  const iv = crypto.getRandomValues(new Uint8Array(12));
+  const encrypted = new Uint8Array(
     await crypto.subtle.encrypt(
       {
         name: settings.algorithm,
@@ -133,7 +133,7 @@ export async function decrypt(
   keyStr: string,
   data: Uint8Array | ArrayBuffer
 ): Promise<Uint8Array> {
-  let key = await stringToKey(keyStr);
+  const key = await stringToKey(keyStr);
 
   if (data instanceof ArrayBuffer) {
     data = new Uint8Array(data);
