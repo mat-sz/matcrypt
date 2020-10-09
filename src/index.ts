@@ -1,15 +1,4 @@
 import { fromByteArray, toByteArray } from 'base64-js';
-let crypto: Crypto;
-
-// Fallback to node-webcrypto-ossl when running within node.js
-if (typeof window !== 'undefined' && window.crypto) {
-  crypto = window.crypto;
-} else {
-  let WebCrypto = require('node-webcrypto-ossl');
-  crypto = new WebCrypto();
-}
-
-if (!crypto) throw new Error('WebCrypto is required to use this library.');
 
 // While it would be possible to let other people alter the settings,
 // I feel like it'd create more confusion. All modern devices can
