@@ -1,0 +1,9 @@
+.eslintignore
+.eslintrc.json
+.prettierrc
+src
+.github
+__tests__
+jest.config.js
+jestEnvironment.ts
+yarn.lock
