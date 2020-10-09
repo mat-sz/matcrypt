@@ -1,16 +1,25 @@
 # matcrypt
 
+<p align="center">
+<img alt="workflow" src="https://img.shields.io/github/workflow/status/mat-sz/matcrypt/Node.js%20CI%20(yarn)">
+<a href="https://npmjs.com/package/matcrypt">
+<img alt="npm" src="https://img.shields.io/npm/v/matcrypt">
+<img alt="npm" src="https://img.shields.io/npm/dw/matcrypt">
+<img alt="NPM" src="https://img.shields.io/npm/l/matcrypt">
+</a>
+</p>
+
 ## Disclaimer
 
 While I've made sure to adhere to all best practices when it comes to AES and WebCrypto, I am not a cryptography professional. This code is not audited. I use this in production, but you should **never** blindly trust any cryptographic code from the internet.
 
 This library only works in browser environments that support WebCrypto.
 
-## Project description
+## About
 
-A WebCrypto wrapper I use for my projects to make certain common tasks easy.
+WebCrypto wrapper that makes AES easy.
 
-Common tasks this library is optimized for are:
+### This library supports
 
 **(AES-256)**
 
@@ -24,11 +33,9 @@ _(The library handles IV randomization and storage.)_
 
 - Compute a base64-encoded hash of binary data
 
-# Code example
+## Code example
 
-Within a React project:
-
-```js
+```ts
 import * as matcrypt from 'matcrypt';
 
 async function example() {

@@ -1,9 +1,17 @@
 {
   "name": "matcrypt",
   "version": "1.0.1",
-  "description": "A WebCrypto wrapper I use for my projects to make certain common tasks easy.",
+  "description": "WebCrypto wrapper that makes AES easy.",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
+  "keywords": [
+    "front-end",
+    "webcrypto",
+    "typescript",
+    "library",
+    "cryptography",
+    "aes"
+  ],
   "scripts": {
     "prepare": "npm run build",
     "test": "jest",
