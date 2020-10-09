@@ -1,6 +1,6 @@
 {
   "name": "matcrypt",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "WebCrypto wrapper that makes AES easy.",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
