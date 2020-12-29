@@ -1,5 +1,7 @@
 import { fromByteArray, toByteArray } from 'base64-js';
 
+export type KeyType = string | Uint8Array | ArrayBuffer;
+
 // While it would be possible to let other people alter the settings,
 // I feel like it'd create more confusion. All modern devices can
 // handle AES-GCM-256 perfectly fine.
@@ -25,14 +27,19 @@ function joinArrays(a: Uint8Array, b: Uint8Array): Uint8Array {
  * Converts a base64-encoded key into a WebCrypto key object.
  * @param input base64-encoded string
  */
-function stringToKey(input: string): Promise<CryptoKey> {
-  return crypto.subtle.importKey(
-    'raw',
-    toByteArray(input),
-    settings.algorithm,
-    true,
-    ['encrypt', 'decrypt']
-  );
+function stringToKey(input: KeyType): Promise<CryptoKey> {
+  let keyBytes: Uint8Array;
+
+  if (typeof input === 'string') {
+    keyBytes = toByteArray(input);
+  } else {
+    keyBytes = new Uint8Array(input);
+  }
+
+  return crypto.subtle.importKey('raw', keyBytes, settings.algorithm, true, [
+    'encrypt',
+    'decrypt',
+  ]);
 }
 
 /**
@@ -53,6 +60,13 @@ function getDataFromArray(a: Uint8Array): Uint8Array {
  * Generates a random base64 encoded key.
  */
 export async function randomKey(): Promise<string> {
+  return fromByteArray(await randomKeyBytes());
+}
+
+/**
+ * Generates a random key.
+ */
+export async function randomKeyBytes(): Promise<Uint8Array> {
   const key = await crypto.subtle.generateKey(
     {
       name: settings.algorithm,
@@ -63,7 +77,7 @@ export async function randomKey(): Promise<string> {
   );
   const raw = await crypto.subtle.exportKey('raw', key);
 
-  return fromByteArray(new Uint8Array(raw));
+  return new Uint8Array(raw);
 }
 
 /**
@@ -79,7 +93,7 @@ export async function hash(data: Uint8Array): Promise<string> {
  * Encrypts a string and returns a base64 encoded ciphertext.
  */
 export async function encryptString(
-  key: string,
+  key: KeyType,
   plaintext: string
 ): Promise<string> {
   return fromByteArray(await encrypt(key, textEncoder.encode(plaintext)));
@@ -89,7 +103,7 @@ export async function encryptString(
  * Decrypts a string.
  */
 export async function decryptString(
-  key: string,
+  key: KeyType,
   encryptedString: string
 ): Promise<string | null> {
   if (!encryptedString) {
@@ -101,11 +115,11 @@ export async function decryptString(
 
 /**
  * Encrypts a byte array.
- * @param keyStr base64-encoded key
+ * @param keyStr key
  * @param data data to encrypt
  */
 export async function encrypt(
-  keyStr: string,
+  keyStr: KeyType,
   data: Uint8Array | ArrayBuffer
 ): Promise<Uint8Array> {
   const key = await stringToKey(keyStr);
@@ -126,11 +140,11 @@ export async function encrypt(
 
 /**
  * Decrypts a byte array.
- * @param keyStr base64-encoded key
+ * @param keyStr key
  * @param data data to decrypt
  */
 export async function decrypt(
-  keyStr: string,
+  keyStr: KeyType,
   data: Uint8Array | ArrayBuffer
 ): Promise<Uint8Array> {
   const key = await stringToKey(keyStr);
