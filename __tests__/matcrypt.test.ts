@@ -1,3 +1,4 @@
+import { fromByteArray, toByteArray } from 'base64-js';
 import * as matcrypt from '../src';
 
 const testString = 'test';
@@ -7,46 +8,63 @@ const testArrayHash =
 
 describe('matcrypt', () => {
   it("should generate a key that's 44 characters long", async () => {
-    let key = await matcrypt.randomKey();
+    const key = await matcrypt.randomKey();
 
     expect(key.length).toBe(44);
   });
 
   it('should generate two keys that are different from each other', async () => {
-    let key = await matcrypt.randomKey();
-    let anotherKey = await matcrypt.randomKey();
+    const key = await matcrypt.randomKey();
+    const anotherKey = await matcrypt.randomKey();
 
     expect(key).not.toBe(anotherKey);
   });
 
   it('should encrypt a test string that decrypts to same exact plaintext', async () => {
-    let key = await matcrypt.randomKey();
-    let ciphertext = await matcrypt.encryptString(key, testString);
-    let plaintext = await matcrypt.decryptString(key, ciphertext);
+    const key = await matcrypt.randomKey();
+    const ciphertext = await matcrypt.encryptString(key, testString);
+    const plaintext = await matcrypt.decryptString(key, ciphertext);
 
     expect(plaintext).toBe(testString);
   });
 
   it('should encrypt a test binary array that decrypts to same exact binary array', async () => {
-    let key = await matcrypt.randomKey();
-    let encrypted = await matcrypt.encrypt(key, testArray);
-    let decrypted = await matcrypt.decrypt(key, encrypted);
+    const key = await matcrypt.randomKey();
+    const encrypted = await matcrypt.encrypt(key, testArray);
+    const decrypted = await matcrypt.decrypt(key, encrypted);
 
     expect(decrypted).toEqual(testArray);
   });
 
   it('should hash a test binary array and the hash should match the expected hash', async () => {
-    let hash = await matcrypt.hash(testArray);
+    const hash = await matcrypt.hash(testArray);
 
     expect(hash).toEqual(testArrayHash);
   });
 
   it('should create different encrypted outputs given same key and input (makes sure IVs are randomly generated)', async () => {
-    let key = await matcrypt.randomKey();
-
-    let encrypted = await matcrypt.encryptString(key, testString);
-    let encryptedAgain = await matcrypt.encryptString(key, testString);
+    const key = await matcrypt.randomKey();
+    const encrypted = await matcrypt.encryptString(key, testString);
+    const encryptedAgain = await matcrypt.encryptString(key, testString);
 
     expect(encrypted).not.toBe(encryptedAgain);
+  });
+
+  it('should accept both Uint8Array and base64 string for keys', async () => {
+    const key = await matcrypt.randomKey();
+    const keyBytes = toByteArray(key);
+    const encrypted = await matcrypt.encrypt(key, testArray);
+    const decrypted = await matcrypt.decrypt(keyBytes, encrypted);
+
+    expect(decrypted).toEqual(testArray);
+  });
+
+  it('should accept both Uint8Array and base64 string for keys: reverse', async () => {
+    const keyBytes = await matcrypt.randomKeyBytes();
+    const key = fromByteArray(keyBytes);
+    const encrypted = await matcrypt.encrypt(keyBytes, testArray);
+    const decrypted = await matcrypt.decrypt(key, encrypted);
+
+    expect(decrypted).toEqual(testArray);
   });
 });
