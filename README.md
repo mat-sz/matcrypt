@@ -33,14 +33,22 @@ _(The library handles IV randomization and storage.)_
 
 - Compute a base64-encoded hash of binary data
 
+**(RSA-OAEP-2048)**
+
+- Random key pair generation
+- String encryption/decryption (ciphertext is base64 encoded as well for easy storage)
+- Binary data encryption/decryption
+
+_(The library handles AES secret randomization and storage.)_
+
 ## Code example
 
 ```ts
-import * as matcrypt from 'matcrypt';
+import { AES } from 'matcrypt';
 
 async function example() {
-  let key = await matcrypt.randomKey();
-  let ciphertext = await matcrypt.encryptString(key, testString);
-  let plaintext = await matcrypt.decryptString(key, ciphertext);
+  let key = await AES.randomKey();
+  let ciphertext = await AES.encryptString(key, testString);
+  let plaintext = await AES.decryptString(key, ciphertext);
 }
 ```
