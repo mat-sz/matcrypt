@@ -27,55 +27,38 @@ export interface KeyPairBytes {
  * Extracts the prepended AES secret from a byte array.
  */
 function getSecretFromArray(a: Uint8Array): Uint8Array {
-  return a.subarray(0, 32);
+  return a.subarray(0, 256);
 }
 
 /**
  * Exctracts the data from a byte array (skipping secret).
  */
 function getDataFromArray(a: Uint8Array): Uint8Array {
-  return a.subarray(32);
+  return a.subarray(256);
 }
 
 /**
  * Converts a base64-encoded key into a WebCrypto key object.
  * @param input base64-encoded string
  */
-function stringToKey(input: KeyType, isPublic: boolean): Promise<CryptoKey> {
-  let keyBytes: Uint8Array;
-
-  if (typeof input === 'string') {
-    keyBytes = toByteArray(input);
-  } else {
-    keyBytes = new Uint8Array(input);
-  }
-
-  return crypto.subtle.importKey('raw', keyBytes, keyParams, true, [
+function stringToKey(input: string, isPublic: boolean): Promise<CryptoKey> {
+  return crypto.subtle.importKey('jwk', JSON.parse(input), keyParams, true, [
     isPublic ? 'encrypt' : 'decrypt',
   ]);
 }
 
-export async function generateKeyPair(): Promise<KeyPair> {
-  const keyPair = await generateKeyPairBytes();
-
-  return {
-    publicKey: fromByteArray(keyPair.publicKey),
-    privateKey: fromByteArray(keyPair.privateKey),
-  };
-}
-
-export async function generateKeyPairBytes(): Promise<KeyPairBytes> {
+export async function randomKeyPair(): Promise<KeyPair> {
   const keyPair = (await crypto.subtle.generateKey(keyParams, true, [
     'encrypt',
     'decrypt',
   ])) as CryptoKeyPair;
 
-  const publicKey = await crypto.subtle.exportKey('raw', keyPair.publicKey);
-  const privateKey = await crypto.subtle.exportKey('raw', keyPair.privateKey);
+  const publicKey = await crypto.subtle.exportKey('jwk', keyPair.publicKey);
+  const privateKey = await crypto.subtle.exportKey('jwk', keyPair.privateKey);
 
   return {
-    publicKey: new Uint8Array(publicKey),
-    privateKey: new Uint8Array(privateKey),
+    publicKey: JSON.stringify(publicKey),
+    privateKey: JSON.stringify(privateKey),
   };
 }
 
@@ -85,7 +68,7 @@ export async function generateKeyPairBytes(): Promise<KeyPairBytes> {
  * @param data data to encrypt
  */
 export async function encryptString(
-  key: KeyType,
+  key: string,
   plaintext: string
 ): Promise<string> {
   return fromByteArray(await encrypt(key, textEncoder.encode(plaintext)));
@@ -97,7 +80,7 @@ export async function encryptString(
  * @param data data to decrypt
  */
 export async function decryptString(
-  key: KeyType,
+  key: string,
   encryptedString: string
 ): Promise<string | null> {
   if (!encryptedString) {
@@ -113,7 +96,7 @@ export async function decryptString(
  * @param data data to encrypt
  */
 export async function encrypt(
-  keyStr: KeyType,
+  keyStr: string,
   data: Uint8Array | ArrayBuffer
 ): Promise<Uint8Array> {
   const publicKey = await stringToKey(keyStr, true);
@@ -136,7 +119,7 @@ export async function encrypt(
  * @param data data to decrypt
  */
 export async function decrypt(
-  keyStr: KeyType,
+  keyStr: string,
   data: Uint8Array | ArrayBuffer
 ): Promise<Uint8Array> {
   const privateKey = await stringToKey(keyStr, false);
