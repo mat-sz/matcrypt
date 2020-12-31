@@ -1,5 +1,7 @@
 import { fromByteArray, toByteArray } from 'base64-js';
 
+export * as rsa from './rsa';
+
 export type KeyType = string | Uint8Array | ArrayBuffer;
 
 // While it would be possible to let other people alter the settings,
