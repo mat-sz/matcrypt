@@ -1,7 +1,7 @@
 import { fromByteArray, toByteArray } from 'base64-js';
 
 import { KeyType } from './types';
-import { joinArrays } from './utils';
+import { splitArray, joinArrays } from './Utils';
 
 // While it would be possible to let other people alter the settings,
 // I feel like it'd create more confusion. All modern devices can
@@ -10,6 +10,8 @@ const settings = {
   algorithm: 'AES-GCM',
   keyLength: 256,
 };
+
+export const ivLength = 12;
 
 const textEncoder = new TextEncoder();
 const textDecoder = new TextDecoder();
@@ -31,20 +33,6 @@ function stringToKey(input: KeyType): Promise<CryptoKey> {
     'encrypt',
     'decrypt',
   ]);
-}
-
-/**
- * Extracts the prepended IV from a byte array.
- */
-function getIVFromArray(a: Uint8Array): Uint8Array {
-  return a.subarray(0, 12);
-}
-
-/**
- * Exctracts the data from a byte array (skipping IV).
- */
-function getDataFromArray(a: Uint8Array): Uint8Array {
-  return a.subarray(12);
 }
 
 /**
@@ -135,14 +123,16 @@ export async function decrypt(
     data = new Uint8Array(data);
   }
 
+  const [iv, realData] = splitArray(data as Uint8Array, ivLength);
+
   return new Uint8Array(
     await crypto.subtle.decrypt(
       {
         name: settings.algorithm,
-        iv: getIVFromArray(data as Uint8Array),
+        iv,
       },
       key,
-      getDataFromArray(data as Uint8Array)
+      realData
     )
   );
 }

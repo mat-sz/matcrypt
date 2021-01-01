@@ -1,7 +1,7 @@
 import { fromByteArray, toByteArray } from 'base64-js';
 
 import * as AES from './AES';
-import { joinArrays } from './utils';
+import { splitArray, joinArrays } from './Utils';
 
 const keyParams = {
   name: 'RSA-OAEP',
@@ -9,6 +9,8 @@ const keyParams = {
   publicExponent: new Uint8Array([0x01, 0x00, 0x01]),
   hash: 'SHA-256',
 } as RsaHashedKeyGenParams;
+
+export const secretLength = 256;
 
 const textEncoder = new TextEncoder();
 const textDecoder = new TextDecoder();
@@ -21,20 +23,6 @@ export interface KeyPair {
 export interface KeyPairBytes {
   publicKey: Uint8Array;
   privateKey: Uint8Array;
-}
-
-/**
- * Extracts the prepended AES secret from a byte array.
- */
-function getSecretFromArray(a: Uint8Array): Uint8Array {
-  return a.subarray(0, 256);
-}
-
-/**
- * Exctracts the data from a byte array (skipping secret).
- */
-function getDataFromArray(a: Uint8Array): Uint8Array {
-  return a.subarray(256);
 }
 
 /**
@@ -128,11 +116,16 @@ export async function decrypt(
     data = new Uint8Array(data);
   }
 
+  const [encryptedSecret, realData] = splitArray(
+    data as Uint8Array,
+    secretLength
+  );
+
   const secret = await crypto.subtle.decrypt(
     { name: 'RSA-OAEP' } as RsaOaepParams,
     privateKey,
-    getSecretFromArray(data as Uint8Array)
+    encryptedSecret
   );
 
-  return await AES.decrypt(secret, getDataFromArray(data as Uint8Array));
+  return await AES.decrypt(secret, realData);
 }
