@@ -3,7 +3,7 @@ import * as RSA from '../src/RSA';
 const testString = 'test';
 const testArray = new Uint8Array([1, 2, 3, 4]);
 
-describe('AES', () => {
+describe('RSA', () => {
   it('should generate a key pair', async () => {
     const keyPair = await RSA.randomKeyPair();
 
