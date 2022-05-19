@@ -1,17 +1,20 @@
-const Environment = require('jest-environment-jsdom');
+import Environment from 'jest-environment-jsdom';
+import { TextEncoder, TextDecoder } from 'util';
+import { webcrypto } from 'node:crypto';
 
-module.exports = class CustomTestEnvironment extends Environment {
-  async setup() {
+export default class CustomTestEnvironment extends Environment {
+  async setup(): Promise<void> {
     await super.setup();
     if (typeof this.global.TextEncoder === 'undefined') {
-      const { TextEncoder, TextDecoder } = require('util');
+      // @ts-ignore
       this.global.TextEncoder = TextEncoder;
+      // @ts-ignore
       this.global.TextDecoder = TextDecoder;
     }
 
     if (typeof this.global.crypto === 'undefined') {
-      let WebCrypto = require('node-webcrypto-ossl');
-      this.global.crypto = new WebCrypto();
+      // @ts-ignore
+      this.global.crypto = webcrypto;
     }
   }
-};
+}
