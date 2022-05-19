@@ -1,6 +1,6 @@
 {
   "name": "matcrypt",
-  "version": "1.2.1",
+  "version": "1.2.2",
   "description": "WebCrypto wrapper that makes AES, RSA and hashing easy.",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
