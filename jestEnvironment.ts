@@ -1,6 +1,6 @@
 import Environment from 'jest-environment-jsdom';
 import { TextEncoder, TextDecoder } from 'util';
-import { webcrypto } from 'node:crypto';
+import { webcrypto } from 'crypto';
 
 export default class CustomTestEnvironment extends Environment {
   async setup(): Promise<void> {
