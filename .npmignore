@@ -3,6 +3,5 @@
 .prettierrc
 .github
 __tests__
-jest.config.ts
-jestEnvironment.ts
+vitest.config.ts
 yarn.lock

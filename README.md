@@ -1,7 +1,7 @@
 # matcrypt
 
 <p align="center">
-<img alt="workflow" src="https://img.shields.io/github/workflow/status/mat-sz/matcrypt/Node.js%20CI%20(yarn)">
+<img alt="workflow" src="https://img.shields.io/github/actions/workflow/status/mat-sz/matcrypt/node.js.yml?branch=master">
 <a href="https://npmjs.com/package/matcrypt">
 <img alt="npm" src="https://img.shields.io/npm/v/matcrypt">
 <img alt="npm" src="https://img.shields.io/npm/dw/matcrypt">
