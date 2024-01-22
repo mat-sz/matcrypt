@@ -2,8 +2,17 @@
   "name": "matcrypt",
   "version": "1.3.0",
   "description": "WebCrypto wrapper that makes AES, RSA and hashing easy.",
-  "main": "lib/index.js",
-  "types": "lib/index.d.ts",
+  "type": "module",
+  "main": "./lib/cjs/index.js",
+  "module": "./lib/esm/index.js",
+  "types": "./lib/esm/index.d.ts",
+  "exports": {
+    ".": {
+      "require": "./lib/cjs/index.js",
+      "import": "./lib/esm/index.js",
+      "types": "./lib/esm/index.d.ts"
+    }
+  },
   "keywords": [
     "front-end",
     "webcrypto",
@@ -18,8 +27,10 @@
   ],
   "scripts": {
     "prepare": "npm run build",
+    "build": "npm run build:cjs && npm run build:esm",
+    "build:esm": "tsc --module esnext --outDir lib/esm && echo '{\"type\": \"module\"}' > lib/esm/package.json",
+    "build:cjs": "tsc --module commonjs --outDir lib/cjs && echo '{\"type\": \"commonjs\"}' > lib/cjs/package.json",
     "test": "vitest",
-    "build": "tsc",
     "lint": "eslint src"
   },
   "author": "Mat Sz <contact@matsz.dev>",
@@ -49,7 +60,7 @@
     "base64-js": "^1.5.1"
   },
   "devDependencies": {
-    "@types/node": "^18.7.16",
+    "@types/node": "^20.11.5",
     "@typescript-eslint/eslint-plugin": "^5.36.2",
     "@typescript-eslint/parser": "^5.36.2",
     "eslint": "^8.23.0",
@@ -57,7 +68,7 @@
     "husky": "^8.0.1",
     "lint-staged": "^13.0.3",
     "prettier": "^2.7.1",
-    "typescript": "^4.8.3",
+    "typescript": "^5.3.3",
     "vitest": "^1.2.1"
   },
   "engines": {
